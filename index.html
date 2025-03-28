@@ -1105,6 +1105,31 @@
               padding: 6px 10px;
           }
       }
+
+      /* 1. Update the ttt-board CSS to ensure it's visible and properly sized */
+      .ttt-board {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: repeat(3, 1fr);
+          gap: 8px;
+          margin: 0 auto 15px;
+          width: 100%;
+          max-width: 240px;
+      }
+
+      .ttt-cell {
+          background-color: white;
+          aspect-ratio: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 36px;
+          cursor: pointer;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+          width: 100%;
+          height: auto;
+      }
   </style>
 </head>
 <body>
@@ -1977,10 +2002,13 @@
           let tttState = ['', '', '', '', '', '', '', '', ''];
           let tttGameActive = true;
           
+          /* 2. Modify the initTicTacToe function to ensure proper initialization */
           function initTicTacToe() {
+              console.log("Initializing Tic-Tac-Toe game");
               tttBoard.innerHTML = '';
               tttState = ['', '', '', '', '', '', '', '', ''];
               tttGameActive = true;
+              tttMessage.classList.add('hidden');
               
               for (let i = 0; i < 9; i++) {
                   const cell = document.createElement('div');
@@ -2429,10 +2457,13 @@
               window.scrollTo(0, 0);
           });
           
+          /* 3. Update the navigation to ensure proper game transition */
           hangmanNextBtn.addEventListener('click', function() {
               hangman.classList.add('hidden');
               ticTacToe.classList.remove('hidden');
-              initTicTacToe();
+              setTimeout(() => {
+                  initTicTacToe(); // Initialize with a slight delay to ensure DOM is ready
+              }, 100);
               updateProgress(3);
               window.scrollTo(0, 0);
           });
