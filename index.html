@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>MARIMAY GAMES</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <style>
+      /* Estilos Gerais */
+      * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          font-family: 'Arial', sans-serif;
+          -webkit-tap-highlight-color: transparent;
+      }
+
+      html, body {
+          height: 100%;
+          width: 100%;
+          position: fixed;
+          overflow: hidden;
+          touch-action: manipulation;
+      }
+
+      body {
+          background: linear-gradient(135deg, #ffcdd2, #f8bbd0);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+      }
+
+      /* Estilos da Tela Inicial */
+      #intro-screen {
+          max-width: 90%;
+          width: 100%;
+          text-align: center;
+          padding: 20px;
+          background-color: rgba(255, 255, 255, 0.8);
+          border-radius: 10px;
+          box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+          border: 4px solid #e91e63;
+          position: relative;
+          overflow: hidden;
+          z-index: 100;
+      }
+      
+      #intro-screen::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: repeating-linear-gradient(
+              45deg,
+              rgba(233, 30, 99, 0.05),
+              rgba(233, 30, 99, 0.05) 10px,
+              rgba(233, 30, 99, 0.1) 10px,
+              rgba(233, 30, 99, 0.1) 20px
+          );
+          z-index: -1;
+      }
+      
+      .title {
+          margin-bottom: 10px;
+          position: relative;
+          display: inline-block;
+      }
+      
+      .title h1 {
+          font-family: 'Press Start 2P', cursive;
+          font-size: 36px;
+          color: #e91e63;
+          text-shadow: 
+              3px 3px 0 #f8bbd0,
+              -1px -1px 0 #ad1457,
+              1px 1px 0 #ad1457;
+          letter-spacing: 2px;
+          margin-bottom: 5px;
+          animation: pulse 1.5s infinite alternate;
+      }
+      
+      .title h2 {
+          font-family: 'Press Start 2P', cursive;
+          font-size: 18px;
+          color: #ad1457;
+          text-shadow: 1px 1px 0 #f8bbd0;
+          letter-spacing: 1px;
+          margin-bottom: 20px;
+      }
+      
+      .pixel-art {
+          width: 200px;
+          height: 200px;
+          margin: 15px auto;
+          image-rendering: pixelated;
+          image-rendering: -moz-crisp-edges;
+          image-rendering: crisp-edges;
+          border: 4px solid #e91e63;
+          border-radius: 8px;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+          animation: float 3s ease-in-out infinite;
+      }
+      
+      .start-btn {
+          display: inline-block;
+          padding: 15px 40px;
+          margin-top: 15px;
+          background-color: #e91e63;
+          color: white;
+          font-family: 'Press Start 2P', cursive;
+          font-size: 16px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          box-shadow: 0 5px 0 #ad1457;
+          position: relative;
+          transition: all 0.1s;
+          text-decoration: none;
+          -webkit-touch-callout: none;
+          -webkit-user-select: none;
+          user-select: none;
+      }
+      
+      .start-btn:active {
+          transform: translateY(5px);
+          box-shadow: 0 0 0 #ad1457;
+      }
+      
+      .pixel-hearts {
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          background-color: #e91e63;
+          clip-path: polygon(
+              50% 0%, 
+              61% 35%, 
+              98% 35%, 
+              68% 57%, 
+              79% 91%, 
+              50% 70%, 
+              21% 91%, 
+              32% 57%, 
+              2% 35%, 
+              39% 35%
+          );
+          animation: float-hearts 4s linear infinite;
+          opacity: 0.7;
+          z-index: 0;
+      }
+      
+      .pixel-border {
+          position: relative;
+          padding: 10px;
+          border: 4px solid #e91e63;
+          border-radius: 8px;
+          margin-top: 15px;
+          background-color: rgba(255, 255, 255, 0.7);
+      }
+      
+      .pixel-border::before {
+          content: '';
+          position: absolute;
+          top: -8px;
+          left: -8px;
+          right: -8px;
+          bottom: -8px;
+          border: 2px dashed #f8bbd0;
+          border-radius: 12px;
+          z-index: -1;
+      }
+
+      /* Estilos dos Jogos */
+      .container {
+          width: 100%;
+          max-width: 100%;
+          padding: 10px;
+          z-index: 1;
+          display: none; /* Inicialmente oculto */
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+      }
+
+      .card {
+          background-color: rgba(255, 255, 255, 0.85);
+          border-radius: 15px;
+          padding: 20px 15px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          backdrop-filter: blur(5px);
+          margin: 60px auto 20px;
+          max-width: 95%;
+      }
+
+      .heart-icon {
+          font-size: 60px;
+          margin-bottom: 15px;
+          animation: pulse 1.5s infinite;
+      }
+
+      h1 {
+          color: #e91e63;
+          text-align: center;
+          margin-bottom: 20px;
+          font-size: 22px;
+      }
+
+      h2 {
+          color: #e91e63;
+          text-align: center;
+          margin-bottom: 15px;
+          font-size: 18px;
+      }
+
+      .buttons {
+          display: flex;
+          flex-direction: column;
+          gap: 15px;
+          width: 100%;
+          max-width: 250px;
+      }
+
+      .btn {
+          padding: 12px 30px;
+          border-radius: 50px;
+          border: none;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          width: 100%;
+      }
+
+      .yes-btn {
+          background-color: #e91e63;
+          color: white;
+      }
+
+      .yes-btn:active {
+          background-color: #d81b60;
+          transform: scale(0.98);
+      }
+
+      .no-btn {
+          background-color: white;
+          color: #e91e63;
+          border: 2px solid #f8bbd0;
+      }
+
+      .no-btn:active {
+          border-color: #e91e63;
+      }
+
+      .result {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+      }
+
+      .hidden {
+          display: none;
+      }
+
+      .pixel-heart-container {
+          display: grid;
+          grid-template-columns: repeat(10, 1fr);
+          gap: 3px;
+          margin-top: 20px;
+      }
+
+      .pixel {
+          width: 20px;
+          height: 20px;
+          border-radius: 4px;
+      }
+
+      .pixel.active {
+          background-color: #e91e63;
+          animation: pulse 1.5s infinite;
+      }
+      
+      /* Barra de progresso */
+      .progress-container {
+          width: 95%;
+          max-width: 350px;
+          margin: 0 auto;
+          background-color: rgba(255, 255, 255, 0.5);
+          border-radius: 50px;
+          padding: 5px;
+          position: fixed;
+          top: 10px;
+          left: 50%;
+          transform: translateX(-50%);
+          z-index: 100;
+          display: none; /* Inicialmente oculto */
+      }
+
+      .progress-bar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 0 5px;
+      }
+
+      .progress-step {
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          background-color: white;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 14px;
+          color: #9e9e9e;
+          position: relative;
+          z-index: 2;
+      }
+
+      .progress-step.active {
+          background-color: #e91e63;
+          color: white;
+          animation: pulse 1.5s infinite;
+      }
+
+      .progress-step.completed {
+          background-color: #e91e63;
+          color: white;
+      }
+
+      .progress-line {
+          height: 4px;
+          background-color: #f8bbd0;
+          flex-grow: 1;
+          margin: 0 -5px;
+          z-index: 1;
+      }
+
+      .progress-line.completed {
+          background-color: #e91e63;
+      }
+
+      /* Estilos para o Labirinto */
+      #maze-game {
+          width: 100%;
+          max-width: 350px;
+          margin: 0 auto;
+      }
+
+      #maze {
+          display: grid;
+          grid-template-columns: repeat(10, 25px);
+          grid-template-rows: repeat(10, 25px);
+          gap: 2px;
+          margin: 0 auto 15px;
+          max-width: 100%;
+      }
+
+      .maze-cell {
+          width: 25px;
+          height: 25px;
+          background-color: white;
+          border-radius: 4px;
+      }
+
+      .maze-wall {
+          background-color: #e91e63;
+          border-radius: 0;
+      }
+
+      .maze-player {
+          background-color: #9c27b0;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 16px;
+      }
+
+      .maze-goal {
+          background-color: #4caf50;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 16px;
+      }
+
+      .maze-instructions {
+          text-align: center;
+          margin-bottom: 15px;
+          color: #e91e63;
+          font-size: 14px;
+      }
+
+      /* Controles para dispositivos móveis */
+      .mobile-controls {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: repeat(3, 1fr);
+          gap: 5px;
+          margin: 15px auto;
+          max-width: 150px;
+      }
+
+      .control-btn {
+          width: 45px;
+          height: 45px;
+          background-color: rgba(233, 30, 99, 0.2);
+          border: 2px solid #e91e63;
+          border-radius: 10px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 22px;
+          color: #e91e63;
+          cursor: pointer;
+          transition: all 0.2s ease;
+      }
+
+      .control-btn:active {
+          background-color: rgba(233, 30, 99, 0.5);
+          transform: scale(0.95);
+      }
+
+      /* Estilos para o Caça-palavras */
+      #word-search {
+          width: 100%;
+          max-width: 350px;
+          margin: 0 auto;
+      }
+
+      .word-search-grid {
+          display: grid;
+          grid-template-columns: repeat(10, 1fr);
+          grid-template-rows: repeat(10, 1fr);
+          gap: 2px;
+          margin-bottom: 15px;
+      }
+
+      .word-cell {
+          width: 100%;
+          aspect-ratio: 1;
+          background-color: white;
+          border-radius: 4px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 14px;
+          font-weight: bold;
+          cursor: pointer;
+          user-select: none;
+          transition: all 0.2s ease;
+      }
+
+      .word-cell.selected {
+          background-color: #f8bbd0;
+      }
+
+      .word-cell.found {
+          background-color: #e91e63;
+          color: white;
+          animation: pulse 1.5s infinite;
+      }
+
+      .word-list {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 8px;
+          margin-bottom: 15px;
+      }
+
+      .word-item {
+          padding: 6px 12px;
+          background-color: white;
+          border-radius: 20px;
+          font-size: 12px;
+          transition: all 0.3s ease;
+      }
+
+      .word-item.found {
+          background-color: #e91e63;
+          color: white;
+          text-decoration: line-through;
+      }
+
+      /* Estilos para o Jogo da Forca */
+      #hangman {
+          width: 100%;
+          max-width: 350px;
+          margin: 0 auto;
+          overflow-y: auto;
+          max-height: 100%;
+          padding-bottom: 20px;
+      }
+
+      .hangman-heart {
+          width: 150px;
+          height: 150px;
+          margin: 0 auto 15px;
+          position: relative;
+      }
+      
+      .heart-piece {
+          position: absolute;
+          background-color: #ffcdd2;
+          opacity: 0.3;
+          transition: all 0.5s ease;
+      }
+
+      .heart-piece.revealed {
+          background-color: #e91e63;
+          opacity: 1;
+          animation: pulse 1.5s infinite;
+      }
+
+      .word-display {
+          display: flex;
+          justify-content: center;
+          gap: 5px;
+          margin-bottom: 20px;
+          flex-wrap: wrap;
+      }
+
+      .letter-box {
+          width: 22px;
+          height: 30px;
+          border-bottom: 3px solid #e91e63;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 18px;
+          font-weight: bold;
+          color: #e91e63;
+      }
+
+      .letter-box.space {
+          border-bottom: none;
+          width: 10px;
+      }
+
+      .keyboard {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          gap: 4px;
+          margin-bottom: 15px;
+      }
+
+      .key {
+          width: 30px;
+          height: 30px;
+          background-color: white;
+          border: 2px solid #f8bbd0;
+          border-radius: 8px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 14px;
+          font-weight: bold;
+          color: #e91e63;
+          cursor: pointer;
+          transition: all 0.2s ease;
+      }
+
+      .key:active {
+          background-color: #f8bbd0;
+          transform: scale(0.95);
+      }
+
+      .key.used {
+          background-color: #9e9e9e;
+          color: white;
+          border-color: #9e9e9e;
+          cursor: default;
+      }
+
+      .key.correct {
+          background-color: #4caf50;
+          color: white;
+          border-color: #4caf50;
+      }
+
+      /* Estilos para o Jogo da Velha */
+      #tic-tac-toe {
+          width: 100%;
+          max-width: 300px;
+          margin: 0 auto;
+      }
+
+      .ttt-board {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          grid-template-rows: repeat(3, 1fr);
+          gap: 8px;
+          margin-bottom: 15px;
+      }
+
+      .ttt-cell {
+          background-color: white;
+          aspect-ratio: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 36px;
+          cursor: pointer;
+          border-radius: 8px;
+          transition: all 0.2s ease;
+          width: 70px;
+          height: 70px;
+      }
+
+      .ttt-cell:active {
+          background-color: #ffebee;
+          transform: scale(0.98);
+      }
+
+      .ttt-heart {
+          color: #e91e63;
+      }
+
+      .ttt-x {
+          color: #9e9e9e;
+      }
+
+      .ttt-message {
+          text-align: center;
+          margin: 15px 0;
+          font-size: 20px;
+          color: #e91e63;
+          font-weight: bold;
+      }
+
+      .next-btn {
+          display: block;
+          margin: 15px auto;
+          padding: 12px 30px;
+          background-color: #e91e63;
+          color: white;
+          border: none;
+          border-radius: 50px;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: all 0.3s ease;
+      }
+
+      .next-btn:active {
+          background-color: #d81b60;
+          transform: scale(0.98);
+      }
+
+      /* Mensagem entre jogos */
+      .transition-message {
+          text-align: center;
+          margin: 15px 0;
+          font-size: 16px;
+          color: #e91e63;
+          font-weight: bold;
+          animation: fadeIn 1s;
+      }
+   
+      .next-btn {
+          position: relative;
+          z-index: 10;
+      }
+
+      /* Tela de pergunta do milhão */
+      #million-question {
+          text-align: center;
+      }
+
+      #million-question .heart-icon {
+          font-size: 80px;
+          margin-bottom: 20px;
+      }
+
+      #million-question h1 {
+          font-size: 24px;
+          margin-bottom: 30px;
+      }
+
+      #million-question .transition-message {
+          font-size: 20px;
+          margin-bottom: 30px;
+      }
+
+      /* Estilos para o Calendário */
+      #calendar-container {
+          width: 100%;
+          max-width: 350px;
+          margin: 0 auto;
+      }
+
+      .calendar {
+          width: 100%;
+          background-color: white;
+          border-radius: 15px;
+          padding: 15px;
+          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+          margin-top: 20px;
+      }
+
+      .calendar-header {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 15px;
+          position: relative;
+      }
+
+      .calendar-month {
+          font-size: 20px;
+          font-weight: bold;
+          color: #e91e63;
+          text-align: center;
+      }
+
+      .calendar-year {
+          font-size: 16px;
+          color: #9e9e9e;
+          margin-left: 8px;
+      }
+
+      .calendar-weekdays {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 4px;
+          margin-bottom: 8px;
+      }
+
+      .weekday {
+          text-align: center;
+          font-weight: bold;
+          color: #e91e63;
+          font-size: 12px;
+      }
+
+      .calendar-days {
+          display: grid;
+          grid-template-columns: repeat(7, 1fr);
+          gap: 4px;
+      }
+
+      .day {
+          aspect-ratio: 1;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          font-size: 14px;
+          border-radius: 50%;
+          cursor: default;
+          transition: all 0.3s ease;
+      }
+
+      .day.current-month {
+          color: #333;
+      }
+
+      .day.other-month {
+          color: #ccc;
+      }
+
+      .day.special-day {
+          background-color: #e91e63;
+          color: white;
+          font-weight: bold;
+          position: relative;
+          animation: pulse 1.5s infinite;
+      }
+
+      .day.special-day::before {
+          content: '';
+          position: absolute;
+          top: -3px;
+          left: -3px;
+          right: -3px;
+          bottom: -3px;
+          border: 2px solid #e91e63;
+          border-radius: 50%;
+          animation: expand 1.5s infinite;
+      }
+
+      .calendar-message {
+          text-align: center;
+          margin-top: 15px;
+          font-size: 18px;
+          color: #e91e63;
+          font-weight: bold;
+          animation: fadeIn 2s;
+      }
+
+      .heart-decoration {
+          display: flex;
+          justify-content: center;
+          margin-top: 15px;
+      }
+
+      .heart-decoration span {
+          font-size: 20px;
+          margin: 0 4px;
+          animation: pulse 1.5s infinite;
+      }
+
+      /* Garantir que as mensagens de transição não cubram os botões */
+      #hangman-message, 
+      #word-search-message, 
+      #maze-message, 
+      #ttt-message {
+          position: relative;
+          z-index: 5;
+          margin-top: 15px;
+          padding-bottom: 15px;
+      }
+
+      /* Garantir que os botões sempre fiquem acessíveis */
+      .next-btn {
+          position: relative;
+          z-index: 10;
+          cursor: pointer;
+      }
+
+      /* Garantir que o container do jogo tenha um z-index adequado */
+      #hangman, 
+      #word-search, 
+      #maze-game, 
+      #tic-tac-toe,
+      #million-question,
+      #proposal, 
+      #result, 
+      #calendar-container {
+          position: relative;
+          z-index: 2;
+      }
+
+      .heart-decoration span:nth-child(2) {
+          animation-delay: 0.5s;
+      }
+
+      .heart-decoration span:nth-child(3) {
+          animation-delay: 1s;
+      }
+
+      /* Animações */
+      @keyframes pulse {
+          0% {
+              transform: scale(1);
+          }
+          50% {
+              transform: scale(1.1);
+          }
+          100% {
+              transform: scale(1);
+          }
+      }
+
+      @keyframes expand {
+          0% {
+              transform: scale(1);
+              opacity: 1;
+          }
+          100% {
+              transform: scale(1.3);
+              opacity: 0;
+          }
+      }
+
+      @keyframes fadeIn {
+          from {
+              opacity: 0;
+          }
+          to {
+              opacity: 1;
+          }
+      }
+
+      @keyframes highlight {
+          0% {
+              transform: scale(1);
+              box-shadow: 0 0 0 0 rgba(233, 30, 99, 0.7);
+          }
+          70% {
+              transform: scale(1.1);
+              box-shadow: 0 0 0 10px rgba(233, 30, 99, 0);
+          }
+          100% {
+              transform: scale(1);
+              box-shadow: 0 0 0 0 rgba(233, 30, 99, 0);
+          }
+      }
+
+      @keyframes float {
+          0% {
+              transform: translateY(0);
+          }
+          50% {
+              transform: translateY(-8px);
+          }
+          100% {
+              transform: translateY(0);
+          }
+      }
+      
+      @keyframes float-hearts {
+          0% {
+              transform: translateY(0) rotate(0deg);
+              opacity: 0;
+          }
+          10% {
+              opacity: 0.7;
+          }
+          100% {
+              transform: translateY(-100vh) rotate(360deg);
+              opacity: 0;
+          }
+      }
+
+      /* Confetes para a tela de pergunta do milhão */
+      .confetti {
+          position: fixed;
+          width: 8px;
+          height: 8px;
+          background-color: #e91e63;
+          opacity: 0.8;
+          z-index: 1;
+          animation: confetti-fall linear forwards;
+      }
+
+      @keyframes confetti-fall {
+          0% {
+              transform: translateY(-100vh) rotate(0deg);
+          }
+          100% {
+              transform: translateY(100vh) rotate(360deg);
+          }
+      }
+
+      /* Dicas visuais para o usuário */
+      .hint {
+          background-color: rgba(233, 30, 99, 0.1);
+          border-left: 4px solid #e91e63;
+          padding: 8px 12px;
+          margin: 12px 0;
+          border-radius: 0 8px 8px 0;
+          font-size: 12px;
+          color: #d81b60;
+      }
+
+      /* Efeitos de partículas para celebração */
+      .particles-container {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 0;
+      }
+
+      .particle {
+          position: absolute;
+          background-color: #e91e63;
+          border-radius: 50%;
+          opacity: 0.7;
+          animation: particle-float linear infinite;
+      }
+
+      @keyframes particle-float {
+          0% {
+              transform: translate(0, 0);
+              opacity: 0.7;
+          }
+          100% {
+              transform: translate(var(--tx), var(--ty));
+              opacity: 0;
+          }
+      }
+
+      /* Make game containers scrollable */
+      #maze-game, #word-search, #hangman, #tic-tac-toe, #million-question, #proposal, #result, #calendar-container {
+          max-height: 100%;
+          overflow-y: auto;
+          padding-bottom: 30px;
+          -webkit-overflow-scrolling: touch;
+      }
+
+      /* Spotify player */
+      #spotify-player {
+          margin-top: 15px;
+          width: 100%;
+          max-width: 100%;
+      }
+
+      #spotify-player iframe {
+          border-radius: 12px;
+          width: 100%;
+          max-width: 100%;
+          height: 300px;
+      }
+
+      /* Ajustes para iPhone 12 */
+      @media screen and (max-width: 390px) {
+          .title h1 {
+              font-size: 28px;
+          }
+          
+          .title h2 {
+              font-size: 14px;
+          }
+          
+          .pixel-art {
+              width: 160px;
+              height: 160px;
+          }
+          
+          .start-btn {
+              padding: 12px 25px;
+              font-size: 14px;
+          }
+          
+          h1 {
+              font-size: 20px;
+          }
+          
+          h2 {
+              font-size: 16px;
+          }
+          
+          .heart-icon {
+              font-size: 50px;
+          }
+          
+          #maze {
+              grid-template-columns: repeat(10, 22px);
+              grid-template-rows: repeat(10, 22px);
+          }
+          
+          .maze-cell {
+              width: 22px;
+              height: 22px;
+          }
+          
+          .control-btn {
+              width: 40px;
+              height: 40px;
+          }
+          
+          .letter-box {
+              width: 20px;
+              height: 28px;
+              font-size: 16px;
+          }
+          
+          .key {
+              width: 28px;
+              height: 28px;
+              font-size: 12px;
+          }
+          
+          .ttt-cell {
+              width: 60px;
+              height: 60px;
+              font-size: 30px;
+          }
+          
+          .pixel {
+              width: 18px;
+              height: 18px;
+          }
+          
+          .calendar-month {
+              font-size: 18px;
+          }
+          
+          .calendar-year {
+              font-size: 14px;
+          }
+          
+          .day {
+              font-size: 12px;
+          }
+          
+          .next-btn {
+              padding: 10px 25px;
+              font-size: 14px;
+          }
+          
+          .transition-message {
+              font-size: 14px;
+          }
+          
+          .hint {
+              font-size: 11px;
+              padding: 6px 10px;
+          }
+      }
+  </style>
+</head>
+<body>
+  <!-- Tela Inicial -->
+  <div id="intro-screen">
+      <div class="title">
+          <h1>MARIMAY</h1>
+          <h2>GAMES</h2>
+      </div>
+      
+      <div class="pixel-border">
+          <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/marimay.jpg-n2zCMPNOuybGMd1UatdF92Kzdo5ny7.jpeg" alt="Pixel Art Couple" class="pixel-art">
+      </div>
+      
+      <button id="start-game-btn" class="start-btn">INICIAR</button>
+  </div>
+
+  <!-- Barra de Progresso -->
+  <div class="progress-container" id="progress-container">
+      <div class="progress-bar">
+          <div class="progress-step active" id="step1">1</div>
+          <div class="progress-line" id="line1"></div>
+          <div class="progress-step" id="step2">2</div>
+          <div class="progress-line" id="line2"></div>
+          <div class="progress-step" id="step3">3</div>
+          <div class="progress-line" id="line3"></div>
+          <div class="progress-step" id="step4">4</div>
+          <div class="progress-line" id="line4"></div>
+          <div class="progress-step" id="step5">5</div>
+      </div>
+  </div>
+
+  <div class="container" id="games-container">
+      <!-- Jogo 1: Labirinto -->
+      <div id="maze-game" class="card">
+          <h1>Encontre o Caminho para o Meu Coração</h1>
+          <p class="maze-instructions">Use as setas do teclado para mover o coração roxo até o coração verde</p>
+          <div id="maze"></div>
+          <!-- Controles para dispositivos móveis -->
+          <div class="mobile-controls">
+              <div></div>
+              <div class="control-btn" id="up-btn">↑</div>
+              <div></div>
+              <div class="control-btn" id="left-btn">←</div>
+              <div></div>
+              <div class="control-btn" id="right-btn">→</div>
+              <div></div>
+              <div class="control-btn" id="down-btn">↓</div>
+              <div></div>
+          </div>
+          <div class="hint">Dica: Encontre o caminho através do labirinto para chegar ao coração verde.</div>
+          <div id="maze-message" class="hidden">
+              <h2>Que bom que, no meio de tudo que poderia ter acontecido, a gente se encontrou ❤️</h2>
+              <p class="transition-message">e que sorte eu tenho por isso...</p>
+              <button id="maze-next-btn" class="next-btn">Próximo Desafio</button>
+          </div>
+      </div>
+
+      <!-- Jogo 2: Caça-palavras -->
+      <div id="word-search" class="card hidden">
+          <h1>Caça-palavras do Amor</h1>
+          <p class="maze-instructions">Encontre as palavras que descrevem o que sinto por você</p>
+          <div class="word-list" id="word-list"></div>
+          <div class="word-search-grid" id="word-search-grid"></div>
+          <div class="hint">Dica: Selecione a primeira e a última letra de cada palavra para encontrá-la.</div>
+          <div id="word-search-message" class="hidden">
+              <h2>Você encontrou todas as palavras que descrevem o que sinto por você ❤️</h2>
+              <p class="transition-message">Cada palavra é um pedaço do meu coração...</p>
+              <button id="word-search-next-btn" class="next-btn">Próximo Desafio</button>
+          </div>
+      </div>
+
+      <!-- Jogo 3: Jogo da Forca -->
+      <div id="hangman" class="card hidden">
+          <h1>Descubra a Mensagem Especial</h1>
+          <div class="hangman-heart" id="hangman-heart"></div>
+          <div class="word-display" id="word-display"></div>
+          <div class="keyboard" id="keyboard"></div>
+          <div class="hint">Dica: Cada letra correta revela uma parte do coração. A mensagem é algo especial sobre nós.</div>
+          <div id="hangman-message" class="hidden">
+              <h2>Você descobriu! Você me faz feliz todos os dias ❤️</h2>
+              <p class="transition-message">E agora vamos jogar pelo meu coração...</p>
+              <button id="hangman-next-btn" class="next-btn">Próximo Desafio</button>
+          </div>
+      </div>
+
+      <!-- Jogo 4: Jogo da Velha -->
+      <div id="tic-tac-toe" class="card hidden">
+          <h1>Jogo da Velha</h1>
+          <div id="ttt-board" class="ttt-board"></div>
+          <div class="hint">Dica: Você joga com os corações. Forme uma linha, coluna ou diagonal para ganhar.</div>
+          <div id="ttt-message" class="hidden">
+              <h2>Você ganhou meu coração ❤️</h2>
+              <p class="transition-message">Chegou o momento mais importante...</p>
+              <button id="ttt-next-btn" class="next-btn">Próximo Passo</button>
+          </div>
+      </div>
+
+      <!-- Tela da Pergunta do Milhão -->
+      <div id="million-question" class="card hidden">
+          <div class="heart-icon">❤️</div>
+          <h1>Já que você ganhou o jogo do meu coração...</h1>
+          <p class="transition-message">Aqui vai a pergunta de um milhão:</p>
+          <button id="million-question-btn" class="next-btn">Revelar Pergunta</button>
+      </div>
+
+      <!-- Jogo 5: Pedido de Namoro -->
+      <div id="proposal" class="card hidden">
+          <div class="heart-icon">❤️</div>
+          <h1 id="question">Aceita ser minha namorada?</h1>
+          <div class="buttons">
+              <button id="yesButton" class="btn yes-btn">Sim</button>
+              <button id="noButton" class="btn no-btn">Não</button>
+          </div>
+      </div>
+      
+      <!-- Resultado do Pedido de Namoro -->
+      <div id="result" class="result hidden">
+          <h1 id="answer">Nos duas, sempre! 💚💜</h1>
+          <div id="pixelHeart" class="pixel-heart-container"></div>
+          <button id="heart-next-btn" class="next-btn" style="margin-top: 30px;">Continuar</button>
+      </div>
+
+      <!-- Calendário -->
+      <div id="calendar-container" class="card hidden">
+          <h1>Nossa Data Especial</h1>
+          <div class="calendar">
+              <div class="calendar-header">
+                  <div class="calendar-month">Março <span class="calendar-year">2025</span></div>
+              </div>
+              <div class="calendar-weekdays">
+                  <div class="weekday">D</div>
+                  <div class="weekday">S</div>
+                  <div class="weekday">T</div>
+                  <div class="weekday">Q</div>
+                  <div class="weekday">Q</div>
+                  <div class="weekday">S</div>
+                  <div class="weekday">S</div>
+              </div>
+              <div class="calendar-days" id="calendar-days">
+                  <!-- Os dias serão preenchidos via JavaScript -->
+              </div>
+          </div>
+          <div class="calendar-message" id="calendar-message"></div>
+          <div class="heart-decoration">
+              <span>💚</span>
+              <span>💜</span>
+              <span>💚</span>
+              <span>💜</span>
+              <span>💚</span>
+              <span>💜</span>
+          </div>
+          <button id="playlist-btn" class="next-btn">Nossa Playlist</button>
+          <div id="spotify-player" class="hidden">
+              <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/5oavY5iBL9FSEMdm7tVvIW?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+          </div>
+      </div>
+  </div>
+  
+  <!-- Container para partículas de celebração -->
+  <div class="particles-container" id="particles-container"></div>
+  
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // Prevenir comportamentos indesejados em dispositivos móveis
+          document.addEventListener('touchmove', function(e) {
+              if (e.target.classList.contains('container') || 
+                  e.target.closest('#hangman') || 
+                  e.target.closest('#word-search') || 
+                  e.target.closest('#maze-game') || 
+                  e.target.closest('#calendar-container')) {
+                  // Permitir rolagem apenas em elementos específicos
+              } else {
+                  e.preventDefault();
+              }
+          }, { passive: false });
+
+          // Elementos da tela inicial
+          const introScreen = document.getElementById('intro-screen');
+          const startGameBtn = document.getElementById('start-game-btn');
+          const gamesContainer = document.getElementById('games-container');
+          const progressContainer = document.getElementById('progress-container');
+          
+          // Iniciar o jogo quando clicar no botão
+          startGameBtn.addEventListener('click', function() {
+              // Esconder a tela inicial
+              introScreen.style.display = 'none';
+              
+              // Mostrar o container de jogos e a barra de progresso
+              gamesContainer.style.display = 'block';
+              progressContainer.style.display = 'block';
+              
+              // Inicializar o primeiro jogo
+              initMaze();
+              updateProgress(0);
+              
+              // Criar corações flutuantes para o fundo
+              createBackgroundHearts();
+          });
+          
+          // Função para criar corações flutuantes no fundo
+          function createBackgroundHearts() {
+              // Limpar corações existentes
+              const existingHearts = document.querySelectorAll('.pixel-hearts');
+              existingHearts.forEach(heart => heart.remove());
+              
+              // Criar novos corações
+              function createHearts() {
+                  const container = document.querySelector('body');
+                  const heart = document.createElement('div');
+                  heart.classList.add('pixel-hearts');
+                  
+                  // Posição aleatória
+                  const posX = Math.random() * window.innerWidth;
+                  heart.style.left = posX + 'px';
+                  heart.style.top = window.innerHeight + 'px';
+                  
+                  // Tamanho aleatório
+                  const size = Math.random() * 15 + 10;
+                  heart.style.width = size + 'px';
+                  heart.style.height = size + 'px';
+                  
+                  // Duração aleatória
+                  const duration = Math.random() * 5 + 3;
+                  heart.style.animation = `float-hearts ${duration}s linear infinite`;
+                  
+                  container.appendChild(heart);
+                  
+                  // Remover após a animação
+                  setTimeout(() => {
+                      heart.remove();
+                  }, duration * 1000);
+              }
+              
+              // Criar corações a cada 300ms
+              setInterval(createHearts, 300);
+          }
+          
+          // Detectar se é um dispositivo móvel
+          const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+          
+          // Elementos comuns
+          const mazeGame = document.getElementById('maze-game');
+          const wordSearch = document.getElementById('word-search');
+          const hangman = document.getElementById('hangman');
+          const ticTacToe = document.getElementById('tic-tac-toe');
+          const millionQuestion = document.getElementById('million-question');
+          const proposal = document.getElementById('proposal');
+          const result = document.getElementById('result');
+          const calendarContainer = document.getElementById('calendar-container');
+          
+          // Elementos da barra de progresso
+          const progressSteps = [
+              document.getElementById('step1'),
+              document.getElementById('step2'),
+              document.getElementById('step3'),
+              document.getElementById('step4'),
+              document.getElementById('step5')
+          ];
+          
+          const progressLines = [
+              document.getElementById('line1'),
+              document.getElementById('line2'),
+              document.getElementById('line3'),
+              document.getElementById('line4')
+          ];
+          
+          // Função para atualizar a barra de progresso
+          function updateProgress(step) {
+              // Marcar todos os passos anteriores como concluídos
+              for (let i = 0; i < step; i++) {
+                  progressSteps[i].classList.remove('active');
+                  progressSteps[i].classList.add('completed');
+                  
+                  if (i < step - 1) {
+                      progressLines[i].classList.add('completed');
+                  }
+              }
+              
+              // Marcar o passo atual como ativo
+              progressSteps[step].classList.add('active');
+          }
+          
+          // Botões de navegação
+          const mazeNextBtn = document.getElementById('maze-next-btn');
+          const wordSearchNextBtn = document.getElementById('word-search-next-btn');
+          const hangmanNextBtn = document.getElementById('hangman-next-btn');
+          const tttNextBtn = document.getElementById('ttt-next-btn');
+          const millionQuestionBtn = document.getElementById('million-question-btn');
+          const heartNextBtn = document.getElementById('heart-next-btn');
+          
+          // Botões do pedido de namoro
+          const noButton = document.getElementById('noButton');
+          const yesButton = document.getElementById('yesButton');
+          const pixelHeart = document.getElementById('pixelHeart');
+          
+          // Mensagens
+          const mazeMessage = document.getElementById('maze-message');
+          const wordSearchMessage = document.getElementById('word-search-message');
+          const hangmanMessage = document.getElementById('hangman-message');
+          const tttMessage = document.getElementById('ttt-message');
+          const calendarMessage = document.getElementById('calendar-message');
+          
+          // Configuração do labirinto
+          const maze = document.getElementById('maze');
+          let playerPosition = { x: 0, y: 0 };
+          let goalPosition = { x: 9, y: 9 };
+          
+          // Matriz do labirinto (0 = caminho, 1 = parede)
+          const mazeLayout = [
+              [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+              [1, 1, 0, 1, 0, 1, 1, 1, 1, 0],
+              [0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+              [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [1, 1, 1, 1, 1, 1, 1, 1, 0, 1],
+              [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+              [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+              [0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+              [1, 1, 1, 1, 1, 0, 1, 0, 0, 0]
+          ];
+          
+          // Inicializar o labirinto
+          function initMaze() {
+              maze.innerHTML = '';
+              for (let y = 0; y < 10; y++) {
+                  for (let x = 0; x < 10; x++) {
+                      const cell = document.createElement('div');
+                      cell.classList.add('maze-cell');
+                      
+                      if (mazeLayout[y][x] === 1) {
+                          cell.classList.add('maze-wall');
+                      }
+                      
+                      if (x === playerPosition.x && y === playerPosition.y) {
+                          cell.classList.add('maze-player');
+                          cell.innerHTML = '❤️';
+                      }
+                      
+                      if (x === goalPosition.x && y === goalPosition.y) {
+                          cell.classList.add('maze-goal');
+                          cell.innerHTML = '❤️';
+                      }
+                      
+                      maze.appendChild(cell);
+                  }
+              }
+          }
+          
+          // Mover o jogador no labirinto
+          function movePlayer(dx, dy) {
+              const newX = playerPosition.x + dx;
+              const newY = playerPosition.y + dy;
+              
+              // Verificar se a nova posição é válida
+              if (
+                  newX >= 0 && newX < 10 &&
+                  newY >= 0 && newY < 10 &&
+                  mazeLayout[newY][newX] !== 1
+              ) {
+                  playerPosition.x = newX;
+                  playerPosition.y = newY;
+                  initMaze();
+                  
+                  // Verificar se o jogador chegou ao objetivo
+                  if (playerPosition.x === goalPosition.x && playerPosition.y === goalPosition.y) {
+                      mazeMessage.classList.remove('hidden');
+                      updateProgress(1); // Atualiza a barra de progresso quando completar
+                      
+                      // Rolagem suave para o botão
+                      setTimeout(() => {
+                          mazeMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }, 300);
+                  }
+              }
+          }
+          
+          // Controles do teclado para o labirinto
+          document.addEventListener('keydown', function(event) {
+              // Só processar teclas se o jogo do labirinto estiver visível
+              if (!mazeGame.classList.contains('hidden') && mazeMessage.classList.contains('hidden')) {
+                  switch (event.key) {
+                      case 'ArrowUp':
+                          movePlayer(0, -1);
+                          event.preventDefault();
+                          break;
+                      case 'ArrowDown':
+                          movePlayer(0, 1);
+                          event.preventDefault();
+                          break;
+                      case 'ArrowLeft':
+                          movePlayer(-1, 0);
+                          event.preventDefault();
+                          break;
+                      case 'ArrowRight':
+                          movePlayer(1, 0);
+                          event.preventDefault();
+                          break;
+                  }
+              }
+          });
+          
+          // Controles para dispositivos móveis
+          document.getElementById('up-btn').addEventListener('click', function() {
+              if (!mazeGame.classList.contains('hidden') && mazeMessage.classList.contains('hidden')) {
+                  movePlayer(0, -1);
+              }
+          });
+          
+          document.getElementById('down-btn').addEventListener('click', function() {
+              if (!mazeGame.classList.contains('hidden') && mazeMessage.classList.contains('hidden')) {
+                  movePlayer(0, 1);
+              }
+          });
+          
+          document.getElementById('left-btn').addEventListener('click', function() {
+              if (!mazeGame.classList.contains('hidden') && mazeMessage.classList.contains('hidden')) {
+                  movePlayer(-1, 0);
+              }
+          });
+          
+          document.getElementById('right-btn').addEventListener('click', function() {
+              if (!mazeGame.classList.contains('hidden') && mazeMessage.classList.contains('hidden')) {
+                  movePlayer(1, 0);
+              }
+          });
+          
+          // Configuração do caça-palavras
+          const wordSearchGrid = document.getElementById('word-search-grid');
+          const wordList = document.getElementById('word-list');
+          
+          // Palavras para o caça-palavras
+          const words = [
+              'AMOR', 
+              'CARINHO', 
+              'PAIXAO', 
+              'TERNURA', 
+              'AFETO', 
+              'CHALERO', 
+              'BEIJOS', 
+              'ABRACOS'
+          ];
+          
+          // Direções possíveis para as palavras
+          const directions = [
+              [0, 1],   // Vertical para baixo
+              [1, 0],   // Horizontal para direita
+              [1, 1],   // Diagonal para baixo-direita
+              [1, -1],  // Diagonal para cima-direita
+          ];
+          
+          // Matriz do caça-palavras
+          let wordSearchMatrix = [];
+          let wordPositions = {};
+          
+          // Inicializar o caça-palavras
+          function initWordSearch() {
+              // Criar matriz vazia 10x10
+              wordSearchMatrix = Array(10).fill().map(() => Array(10).fill(''));
+              wordPositions = {};
+              
+              // Colocar as palavras na matriz
+              for (const word of words) {
+                  placeWord(word);
+              }
+              
+              // Preencher espaços vazios com letras aleatórias
+              for (let y = 0; y < 10; y++) {
+                  for (let x = 0; x < 10; x++) {
+                      if (wordSearchMatrix[y][x] === '') {
+                          const randomLetter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                          wordSearchMatrix[y][x] = randomLetter;
+                      }
+                  }
+              }
+              
+              // Renderizar o grid
+              renderWordSearchGrid();
+              
+              // Renderizar a lista de palavras
+              renderWordList();
+          }
+          
+          // Colocar uma palavra na matriz
+          function placeWord(word) {
+              let placed = false;
+              let attempts = 0;
+              
+              while (!placed && attempts < 100) {
+                  attempts++;
+                  
+                  // Escolher uma direção aleatória
+                  const dirIndex = Math.floor(Math.random() * directions.length);
+                  const [dx, dy] = directions[dirIndex];
+                  
+                  // Escolher uma posição inicial aleatória
+                  const startX = Math.floor(Math.random() * 10);
+                  const startY = Math.floor(Math.random() * 10);
+                  
+                  // Verificar se a palavra cabe na direção escolhida
+                  if (
+                      startX + dx * (word.length - 1) >= 0 && 
+                      startX + dx * (word.length - 1) < 10 &&
+                      startY + dy * (word.length - 1) >= 0 && 
+                      startY + dy * (word.length - 1) < 10
+                  ) {
+                      // Verificar se a palavra não conflita com outras palavras
+                      let canPlace = true;
+                      const positions = [];
+                      
+                      for (let i = 0; i < word.length; i++) {
+                          const x = startX + dx * i;
+                          const y = startY + dy * i;
+                          
+                          if (wordSearchMatrix[y][x] !== '' && wordSearchMatrix[y][x] !== word[i]) {
+                              canPlace = false;
+                              break;
+                          }
+                          
+                          positions.push({x, y});
+                      }
+                      
+                      if (canPlace) {
+                          // Colocar a palavra na matriz
+                          for (let i = 0; i < word.length; i++) {
+                              const x = startX + dx * i;
+                              const y = startY + dy * i;
+                              wordSearchMatrix[y][x] = word[i];
+                          }
+                          
+                          // Armazenar as posições da palavra
+                          wordPositions[word] = positions;
+                          placed = true;
+                      }
+                  }
+              }
+              
+              // Se não conseguiu colocar a palavra após várias tentativas, tente novamente com outra direção
+              if (!placed) {
+                  placeWord(word);
+              }
+          }
+          
+          // Renderizar o grid do caça-palavras
+          function renderWordSearchGrid() {
+              wordSearchGrid.innerHTML = '';
+              
+              for (let y = 0; y < 10; y++) {
+                  for (let x = 0; x < 10; x++) {
+                      const cell = document.createElement('div');
+                      cell.classList.add('word-cell');
+                      cell.textContent = wordSearchMatrix[y][x];
+                      cell.dataset.x = x;
+                      cell.dataset.y = y;
+                      
+                      cell.addEventListener('click', function() {
+                          handleWordCellClick(x, y);
+                      });
+                      
+                      wordSearchGrid.appendChild(cell);
+                  }
+              }
+          }
+          
+          // Renderizar a lista de palavras
+          function renderWordList() {
+              wordList.innerHTML = '';
+              
+              for (const word of words) {
+                  const wordItem = document.createElement('div');
+                  wordItem.classList.add('word-item');
+                  wordItem.textContent = word;
+                  wordItem.id = `word-${word}`;
+                  wordList.appendChild(wordItem);
+              }
+          }
+          
+          // Variáveis para seleção de palavras
+          let selectedCells = [];
+          let foundWords = [];
+          
+          // Manipular clique em uma célula do caça-palavras
+          function handleWordCellClick(x, y) {
+              const cell = wordSearchGrid.querySelector(`[data-x="${x}"][data-y="${y}"]`);
+              
+              if (selectedCells.length === 0) {
+                  // Primeira célula selecionada
+                  cell.classList.add('selected');
+                  selectedCells.push({x, y, cell});
+              } else if (selectedCells.length === 1) {
+                  // Segunda célula selecionada - determinar a direção
+                  const firstCell = selectedCells[0];
+                  const dx = Math.sign(x - firstCell.x);
+                  const dy = Math.sign(y - firstCell.y);
+                  
+                  // Verificar se é uma direção válida
+                  if (dx === 0 && dy === 0) {
+                      // Mesma célula - desmarcar
+                      firstCell.cell.classList.remove('selected');
+                      selectedCells = [];
+                      return;
+                  }
+                  
+                  // Selecionar todas as células na linha entre a primeira e a segunda
+                  const distance = Math.max(
+                      Math.abs(x - firstCell.x),
+                      Math.abs(y - firstCell.y)
+                  );
+                  
+                  // Adicionar todas as células no caminho
+                  for (let i = 0; i <= distance; i++) {
+                      const cellX = firstCell.x + dx * i;
+                      const cellY = firstCell.y + dy * i;
+                      const pathCell = wordSearchGrid.querySelector(`[data-x="${cellX}"][data-y="${cellY}"]`);
+                      
+                      if (pathCell) {
+                          pathCell.classList.add('selected');
+                          if (i > 0) {
+                              selectedCells.push({x: cellX, y: cellY, cell: pathCell});
+                          }
+                      }
+                  }
+                  
+                  // Verificar se formou uma palavra
+                  checkSelectedWord();
+                  
+                  // Limpar seleção após um pequeno atraso
+                  setTimeout(() => {
+                      selectedCells.forEach(cell => {
+                          if (!cell.cell.classList.contains('found')) {
+                              cell.cell.classList.remove('selected');
+                          }
+                      });
+                      selectedCells = [];
+                  }, 500);
+              }
+          }
+          
+          // Verificar se a seleção forma uma palavra
+          function checkSelectedWord() {
+              // Obter a palavra formada
+              let word = '';
+              for (const cell of selectedCells) {
+                  word += wordSearchMatrix[cell.y][cell.x];
+              }
+              
+              // Verificar se a palavra está na lista
+              if (words.includes(word)) {
+                  // Palavra encontrada!
+                  foundWords.push(word);
+                  
+                  // Marcar as células como encontradas
+                  selectedCells.forEach(cell => {
+                      cell.cell.classList.add('found');
+                  });
+                  
+                  // Marcar a palavra na lista
+                  const wordItem = document.getElementById(`word-${word}`);
+                  if (wordItem) {
+                      wordItem.classList.add('found');
+                  }
+                  
+                  // Verificar se todas as palavras foram encontradas
+                  if (foundWords.length === words.length) {
+                      wordSearchMessage.classList.remove('hidden');
+                      updateProgress(2);
+                      
+                      // Rolagem suave para o botão
+                      setTimeout(() => {
+                          wordSearchMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }, 300);
+                  }
+              } else {
+                  // Verificar se a palavra invertida está na lista
+                  const reversedWord = word.split('').reverse().join('');
+                  if (words.includes(reversedWord)) {
+                      // Palavra encontrada!
+                      foundWords.push(reversedWord);
+                      
+                      // Marcar as células como encontradas
+                      selectedCells.forEach(cell => {
+                          cell.cell.classList.add('found');
+                      });
+                      
+                      // Marcar a palavra na lista
+                      const wordItem = document.getElementById(`word-${reversedWord}`);
+                      if (wordItem) {
+                          wordItem.classList.add('found');
+                      }
+                      
+                      // Verificar se todas as palavras foram encontradas
+                      if (foundWords.length === words.length) {
+                          wordSearchMessage.classList.remove('hidden');
+                          updateProgress(2);
+                          
+                          // Rolagem suave para o botão
+                          setTimeout(() => {
+                              wordSearchMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          }, 300);
+                      }
+                  }
+              }
+          }
+          
+          // Configuração do jogo da forca
+          const hangmanHeart = document.getElementById('hangman-heart');
+          const wordDisplay = document.getElementById('word-display');
+          const keyboard = document.getElementById('keyboard');
+          
+          // Frase para adivinhar
+          const hangmanPhrase = "VOCE ME FAZ FELIZ TODOS OS DIAS";
+          let guessedLetters = [];
+          let heartPieces = [];
+          
+          // Inicializar o jogo da forca
+          function initHangman() {
+              // Limpar estados anteriores
+              guessedLetters = [];
+              
+              // Resetar a mensagem e o botão
+              hangmanMessage.classList.add('hidden');
+              hangmanNextBtn.style.display = 'none'; // Esconder o botão inicialmente
+              
+              // Criar o coração
+              createHeartPieces();
+              
+              // Renderizar a palavra
+              renderWordDisplay();
+              
+              // Renderizar o teclado
+              renderKeyboard();
+          }
+          
+          // Criar as peças do coração
+          function createHeartPieces() {
+              hangmanHeart.innerHTML = '';
+              heartPieces = [];
+              
+              // Criar 8 peças do coração
+              const heartShapes = [
+                  // Parte superior esquerda
+                  { top: '0%', left: '25%', width: '25%', height: '25%', borderRadius: '50% 50% 0 50%' },
+                  // Parte superior direita
+                  { top: '0%', left: '50%', width: '25%', height: '25%', borderRadius: '50% 50% 50% 0' },
+                  // Meio esquerdo superior
+                  { top: '25%', left: '12.5%', width: '37.5%', height: '25%', borderRadius: '50% 0 0 50%' },
+                  // Meio direito superior
+                  { top: '25%', left: '50%', width: '37.5%', height: '25%', borderRadius: '0 50% 50% 0' },
+                  // Meio esquerdo inferior
+                  { top: '50%', left: '25%', width: '25%', height: '25%', borderRadius: '0 0 0 50%' },
+                  // Meio direito inferior
+                  { top: '50%', left: '50%', width: '25%', height: '25%', borderRadius: '0 0 50% 0' },
+                  // Parte inferior esquerda
+                  { top: '75%', left: '37.5%', width: '12.5%', height: '25%', borderRadius: '0 0 0 50%' },
+                  // Parte inferior direita
+                  { top: '75%', left: '50%', width: '12.5%', height: '25%', borderRadius: '0 0 50% 0' }
+              ];
+              
+              for (const shape of heartShapes) {
+                  const piece = document.createElement('div');
+                  piece.classList.add('heart-piece');
+                  piece.style.top = shape.top;
+                  piece.style.left = shape.left;
+                  piece.style.width = shape.width;
+                  piece.style.height = shape.height;
+                  piece.style.borderRadius = shape.borderRadius;
+                  
+                  hangmanHeart.appendChild(piece);
+                  heartPieces.push(piece);
+              }
+          }
+          
+          // Renderizar a palavra a ser adivinhada
+          function renderWordDisplay() {
+              wordDisplay.innerHTML = '';
+              
+              for (let i = 0; i < hangmanPhrase.length; i++) {
+                  const letter = hangmanPhrase[i];
+                  const letterBox = document.createElement('div');
+                  
+                  if (letter === ' ') {
+                      letterBox.classList.add('letter-box', 'space');
+                  } else {
+                      letterBox.classList.add('letter-box');
+                      if (guessedLetters.includes(letter)) {
+                          letterBox.textContent = letter;
+                      }
+                  }
+                  
+                  wordDisplay.appendChild(letterBox);
+              }
+          }
+          
+          // Renderizar o teclado
+          function renderKeyboard() {
+              keyboard.innerHTML = '';
+              
+              const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+              
+              for (let i = 0; i < letters.length; i++) {
+                  const letter = letters[i];
+                  const key = document.createElement('div');
+                  key.classList.add('key');
+                  key.textContent = letter;
+                  
+                  if (guessedLetters.includes(letter)) {
+                      key.classList.add('used');
+                      if (hangmanPhrase.includes(letter)) {
+                          key.classList.add('correct');
+                      }
+                  } else {
+                      key.addEventListener('click', function() {
+                          guessLetter(letter);
+                      });
+                  }
+                  
+                  keyboard.appendChild(key);
+              }
+          }
+          
+          // Adivinhar uma letra
+          function guessLetter(letter) {
+              if (guessedLetters.includes(letter)) return;
+              
+              guessedLetters.push(letter);
+              
+              // Atualiza a interface
+              renderWordDisplay();
+              renderKeyboard();
+              
+              // Verifica se acertou alguma letra
+              if (hangmanPhrase.includes(letter)) {
+                  // Revela uma parte aleatória do coração ainda não revelada
+                  const unrevealed = heartPieces.filter(p => !p.classList.contains('revealed'));
+                  if (unrevealed.length > 0) {
+                      const randomPiece = unrevealed[Math.floor(Math.random() * unrevealed.length)];
+                      randomPiece.classList.add('revealed');
+                  }
+              }
+              
+              // Só verifica vitória depois de processar tudo
+              checkHangmanWin();
+          }
+          
+          // Verificar se o jogador ganhou o jogo da forca
+          function checkHangmanWin() {
+              // Verificar se todas as letras não-espaço foram adivinhadas
+              const allLettersGuessed = Array.from(hangmanPhrase).every(letter => 
+                  letter === ' ' || guessedLetters.includes(letter)
+              );
+
+              if (allLettersGuessed) {
+                  // Primeiro revela todas as peças do coração
+                  heartPieces.forEach(piece => piece.classList.add('revealed'));
+                  
+                  // Depois de um pequeno delay, mostra a mensagem
+                  setTimeout(() => {
+                      hangmanMessage.classList.remove('hidden');
+                      hangmanNextBtn.style.display = 'block';
+                      updateProgress(3);
+                      
+                      // Rolagem suave para o botão
+                      hangmanNextBtn.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                  }, 1000); // 1 segundo de delay para dar tempo da animação
+              }
+          }
+          
+          // Inicializar o jogo da velha
+          const tttBoard = document.getElementById('ttt-board');
+          let tttState = ['', '', '', '', '', '', '', '', ''];
+          let tttGameActive = true;
+          
+          function initTicTacToe() {
+              tttBoard.innerHTML = '';
+              tttState = ['', '', '', '', '', '', '', '', ''];
+              tttGameActive = true;
+              
+              for (let i = 0; i < 9; i++) {
+                  const cell = document.createElement('div');
+                  cell.classList.add('ttt-cell');
+                  cell.setAttribute('data-index', i);
+                  
+                  cell.addEventListener('click', function() {
+                      handleCellClick(i, cell);
+                  });
+                  
+                  tttBoard.appendChild(cell);
+              }
+          }
+          
+          function handleCellClick(index, cell) {
+              if (tttGameActive && tttState[index] === '') {
+                  // Jogador faz a jogada (coração)
+                  tttState[index] = 'heart';
+                  cell.innerHTML = '❤️';
+                  cell.classList.add('ttt-heart');
+                  
+                  // Verificar se o jogador ganhou
+                  if (checkWinner('heart')) {
+                      tttGameActive = false;
+                      tttMessage.classList.remove('hidden');
+                      updateProgress(4);
+                      
+                      // Rolagem suave para o botão
+                      setTimeout(() => {
+                          tttMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                      }, 300);
+                      return;
+                  }
+                  
+                  // Verificar se há empate
+                  if (isBoardFull()) {
+                      // Reiniciar o jogo para dar outra chance ao jogador
+                      setTimeout(() => {
+                          initTicTacToe();
+                      }, 1000);
+                      return;
+                  }
+                  
+                  // Computador faz a jogada (X)
+                  setTimeout(() => {
+                      if (tttGameActive) {
+                          makeComputerMove();
+                          
+                          // Verificar se o computador ganhou (não deveria acontecer)
+                          if (checkWinner('x')) {
+                              // Se por algum motivo o computador ganhar, reinicie o jogo
+                              setTimeout(() => {
+                                  initTicTacToe();
+                              }, 1000);
+                              return;
+                          }
+                          
+                          // Verificar se há empate após a jogada do computador
+                          if (isBoardFull()) {
+                              // Reiniciar o jogo para dar outra chance ao jogador
+                              setTimeout(() => {
+                                  initTicTacToe();
+                              }, 1000);
+                              return;
+                          }
+                      }
+                  }, 500);
+              }
+          }
+          
+          // Verificar se o tabuleiro está cheio (empate)
+          function isBoardFull() {
+              return tttState.every(cell => cell !== '');
+          }
+          
+          // Verificar se há um vencedor
+          function checkWinner(player) {
+              const winPatterns = [
+                  [0, 1, 2], [3, 4, 5], [6, 7, 8], // Linhas
+                  [0, 3, 6], [1, 4, 7], [2, 5, 8], // Colunas
+                  [0, 4, 8], [2, 4, 6]             // Diagonais
+              ];
+              
+              return winPatterns.some(pattern => {
+                  return pattern.every(index => tttState[index] === player);
+              });
+          }
+          
+          // Fazer a jogada do computador (nunca ganha)
+          function makeComputerMove() {
+              // Estratégia: Primeiro, verificar se o jogador está prestes a ganhar e NÃO bloquear
+              const winningMove = findWinningMove('heart');
+              if (winningMove !== -1) {
+                  // Se o jogador pode ganhar na próxima jogada, NÃO bloqueie
+                  // Em vez disso, jogue em qualquer outra posição vazia
+                  const emptyCells = findEmptyCellsExcept(winningMove);
+                  if (emptyCells.length > 0) {
+                      const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                      const moveIndex = emptyCells[randomIndex];
+                      
+                      tttState[moveIndex] = 'x';
+                      const cell = tttBoard.querySelector(`[data-index="${moveIndex}"]`);
+                      cell.innerHTML = '✕';
+                      cell.classList.add('ttt-x');
+                      return;
+                  }
+              }
+              
+              // Se o jogador não está prestes a ganhar, verificar se o computador pode ganhar e EVITAR isso
+              const computerWinningMove = findWinningMove('x');
+              if (computerWinningMove !== -1) {
+                  // Se o computador pode ganhar, NÃO faça essa jogada
+                  const emptyCells = findEmptyCellsExcept(computerWinningMove);
+                  if (emptyCells.length > 0) {
+                      const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                      const moveIndex = emptyCells[randomIndex];
+                      
+                      tttState[moveIndex] = 'x';
+                      const cell = tttBoard.querySelector(`[data-index="${moveIndex}"]`);
+                      cell.innerHTML = '✕';
+                      cell.classList.add('ttt-x');
+                      return;
+                  }
+              }
+              
+              // Se não há jogadas especiais, escolha qualquer célula vazia
+              const emptyCells = findEmptyCells();
+              if (emptyCells.length > 0) {
+                  const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                  const moveIndex = emptyCells[randomIndex];
+                  
+                  tttState[moveIndex] = 'x';
+                  const cell = tttBoard.querySelector(`[data-index="${moveIndex}"]`);
+                  cell.innerHTML = '✕';
+                  cell.classList.add('ttt-x');
+              }
+          }
+          
+          // Encontrar uma jogada vencedora para o jogador especificado
+          function findWinningMove(player) {
+              const winPatterns = [
+                  [0, 1, 2], [3, 4, 5], [6, 7, 8], // Linhas
+                  [0, 3, 6], [1, 4, 7], [2, 5, 8], // Colunas
+                  [0, 4, 8], [2, 4, 6]             // Diagonais
+              ];
+              
+              for (const pattern of winPatterns) {
+                  const [a, b, c] = pattern;
+                  
+                  // Verificar se o jogador tem 2 símbolos em uma linha e o terceiro espaço está vazio
+                  if (tttState[a] === player && tttState[b] === player && tttState[c] === '') {
+                      return c;
+                  }
+                  if (tttState[a] === player && tttState[c] === player && tttState[b] === '') {
+                      return b;
+                  }
+                  if (tttState[b] === player && tttState[c] === player && tttState[a] === '') {
+                      return a;
+                  }
+              }
+              
+              return -1; // Nenhuma jogada vencedora encontrada
+          }
+          
+          // Encontrar todas as células vazias
+          function findEmptyCells() {
+              const emptyCells = [];
+              for (let i = 0; i < tttState.length; i++) {
+                  if (tttState[i] === '') {
+                      emptyCells.push(i);
+                  }
+              }
+              return emptyCells;
+          }
+          
+          // Encontrar todas as células vazias exceto uma específica
+          function findEmptyCellsExcept(exceptIndex) {
+              const emptyCells = [];
+              for (let i = 0; i < tttState.length; i++) {
+                  if (tttState[i] === '' && i !== exceptIndex) {
+                      emptyCells.push(i);
+                  }
+              }
+              return emptyCells;
+          }
+          
+          // Função para criar confetes na tela da pergunta do milhão
+          function createConfetti() {
+              const container = document.getElementById('particles-container');
+              container.innerHTML = '';
+              
+              const colors = ['#e91e63', '#f8bbd0', '#ff94c2', '#d81b60', '#f06292'];
+              
+              for (let i = 0; i < 100; i++) {
+                  const confetti = document.createElement('div');
+                  confetti.classList.add('confetti');
+                  
+                  // Tamanho aleatório
+                  const size = Math.random() * 8 + 5;
+                  confetti.style.width = `${size}px`;
+                  confetti.style.height = `${size}px`;
+                  
+                  // Posição inicial aleatória
+                  const left = Math.random() * 100;
+                  confetti.style.left = `${left}%`;
+                  
+                  // Cor aleatória
+                  const colorIndex = Math.floor(Math.random() * colors.length);
+                  confetti.style.backgroundColor = colors[colorIndex];
+                  
+                  // Forma aleatória
+                  if (Math.random() > 0.5) {
+                      confetti.style.borderRadius = '50%';
+                  } else {
+                      confetti.style.borderRadius = '0';
+                  }
+                  
+                  // Duração e atraso aleatórios
+                  const duration = Math.random() * 3 + 2;
+                  const delay = Math.random() * 5;
+                  confetti.style.animation = `confetti-fall ${duration}s ${delay}s linear forwards`;
+                  
+                  container.appendChild(confetti);
+              }
+          }
+          
+          // Configuração do pedido de namoro
+          // Crie um contêiner para o botão "Não" quando ele começar a fugir
+          const buttonContainer = document.createElement('div');
+          buttonContainer.id = 'noButtonContainer';
+          buttonContainer.style.position = 'fixed';
+          buttonContainer.style.zIndex = '1000';
+          buttonContainer.style.top = '0';
+          buttonContainer.style.left = '0';
+          buttonContainer.style.width = '100%';
+          buttonContainer.style.height = '100%';
+          buttonContainer.style.pointerEvents = 'none';
+          document.body.appendChild(buttonContainer);
+          
+          // Variável para controlar se o botão já começou a fugir
+          let isRunning = false;
+          
+          // Adicione o evento de mouseover ao botão "Não"
+          noButton.addEventListener('mouseover', function() {
+              if (!isRunning) {
+                  // Primeira vez que o mouse passa por cima, mova o botão para o contêiner
+                  buttonContainer.appendChild(noButton);
+                  noButton.style.position = 'absolute';
+                  noButton.style.pointerEvents = 'auto';
+                  isRunning = true;
+              }
+              
+              // Posicione o botão em um local aleatório
+              moveButtonToRandomPosition();
+          });
+          
+          // Para dispositivos móveis, adicione evento de toque
+          noButton.addEventListener('touchstart', function(e) {
+              e.preventDefault(); // Prevenir comportamento padrão
+              if (!isRunning) {
+                  buttonContainer.appendChild(noButton);
+                  noButton.style.position = 'absolute';
+                  noButton.style.pointerEvents = 'auto';
+                  isRunning = true;
+              }
+              moveButtonToRandomPosition();
+          });
+          
+          function moveButtonToRandomPosition() {
+              // Obtenha as dimensões da janela visível
+              const viewportWidth = window.innerWidth;
+              const viewportHeight = window.innerHeight;
+              
+              // Obtenha as dimensões do botão
+              const buttonWidth = noButton.offsetWidth;
+              const buttonHeight = noButton.offsetHeight;
+              
+              // Defina uma margem de segurança
+              const safeMargin = 20;
+              
+              // Calcule os limites seguros
+              const maxX = viewportWidth - buttonWidth - safeMargin;
+              const maxY = viewportHeight - buttonHeight - safeMargin;
+              
+              // Gere uma posição aleatória dentro dos limites seguros
+              const randomX = Math.min(Math.max(safeMargin, Math.floor(Math.random() * maxX)), maxX);
+              const randomY = Math.min(Math.max(safeMargin, Math.floor(Math.random() * maxY)), maxY);
+              
+              // Posicione o botão
+              noButton.style.left = randomX + 'px';
+              noButton.style.top = randomY + 'px';
+          }
+          
+          // Handle "Yes" button click
+          yesButton.addEventListener('click', function() {
+              proposal.classList.add('hidden');
+              result.classList.remove('hidden');
+              updateProgress(4);
+              
+              // Esconda o botão "Não" se estiver fugindo
+              if (isRunning) {
+                  buttonContainer.style.display = 'none';
+              }
+              
+              // Create pixel heart
+              createPixelHeart();
+          });
+          
+          // Heart pattern (1 = pixel, 0 = no pixel)
+          const heartPattern = [
+              [0, 0, 1, 1, 0, 0, 1, 1, 0, 0],
+              [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+              [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+              [0, 1, 1, 1, 1, 1, 1, 1, 1, 0],
+              [0, 0, 1, 1, 1, 1, 1, 1, 0, 0],
+              [0, 0, 0, 1, 1, 1, 1, 0, 0, 0],
+              [0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+          ];
+          
+          function createPixelHeart() {
+              // Create all pixels first
+              for (let y = 0; y < heartPattern.length; y++) {
+                  for (let x = 0; x < heartPattern[y].length; x++) {
+                      const pixel = document.createElement('div');
+                      pixel.classList.add('pixel');
+                      
+                      if (heartPattern[y][x] === 1) {
+                          pixel.dataset.x = x;
+                          pixel.dataset.y = y;
+                      }
+                      
+                      pixelHeart.appendChild(pixel);
+                  }
+              }
+              
+              // Get all pixels that should be active
+              const activePixels = [];
+              document.querySelectorAll('.pixel[data-x]').forEach(pixel => {
+                  activePixels.push(pixel);
+              });
+              
+              // Shuffle array for random reveal
+              shuffleArray(activePixels);
+              
+              // Reveal pixels one by one
+              let i = 0;
+              const interval = setInterval(() => {
+                  if (i < activePixels.length) {
+                      activePixels[i].classList.add('active');
+                      i++;
+                  } else {
+                      clearInterval(interval);
+                  }
+              }, 50);
+          }
+          
+          function shuffleArray(array) {
+              for (let i = array.length - 1; i > 0; i--) {
+                  const j = Math.floor(Math.random() * (i + 1));
+                  [array[i], array[j]] = [array[j], array[i]];
+              }
+              return array;
+          }
+          
+          // Inicializar o calendário
+          function initCalendar() {
+              const calendarDays = document.getElementById('calendar-days');
+              calendarDays.innerHTML = '';
+              
+              // Março 2025
+              const year = 2025;
+              const month = 2; // 0-indexed (0 = Janeiro, 2 = Março)
+              const specialDay = 28; // 28 de março
+              
+              // Primeiro dia do mês
+              const firstDay = new Date(year, month, 1);
+              // Último dia do mês
+              const lastDay = new Date(year, month + 1, 0);
+              
+              // Dia da semana do primeiro dia (0 = Domingo, 6 = Sábado)
+              const firstDayOfWeek = firstDay.getDay();
+              
+              // Número total de dias no mês
+              const daysInMonth = lastDay.getDate();
+              
+              // Adicionar dias do mês anterior para preencher a primeira semana
+              for (let i = 0; i < firstDayOfWeek; i++) {
+                  const dayElement = document.createElement('div');
+                  dayElement.classList.add('day', 'other-month');
+                  calendarDays.appendChild(dayElement);
+              }
+              
+              // Adicionar dias do mês atual
+              for (let day = 1; day <= daysInMonth; day++) {
+                  const dayElement = document.createElement('div');
+                  dayElement.classList.add('day', 'current-month');
+                  dayElement.textContent = day;
+                  
+                  // Destacar o dia especial
+                  if (day === specialDay) {
+                      dayElement.classList.add('special-day');
+                      
+                      // Adicionar animação de destaque após um pequeno atraso
+                      setTimeout(() => {
+                          dayElement.style.animation = 'highlight 1.5s infinite';
+                      }, 1000);
+                  }
+                  
+                  calendarDays.appendChild(dayElement);
+              }
+              
+              // Adicionar mensagem após um atraso
+              setTimeout(() => {
+                  calendarMessage.textContent = 'nosso dia pra sempre 💚💜';
+                  calendarMessage.style.opacity = '1';
+              }, 2000);
+          }
+          
+          // Playlist button functionality
+          const playlistBtn = document.getElementById('playlist-btn');
+          const spotifyPlayer = document.getElementById('spotify-player');
+
+          playlistBtn.addEventListener('click', function() {
+              spotifyPlayer.classList.toggle('hidden');
+              if (!spotifyPlayer.classList.contains('hidden')) {
+                  spotifyPlayer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+          });
+          
+          // Navegação entre os jogos
+          mazeNextBtn.addEventListener('click', function() {
+              mazeGame.classList.add('hidden');
+              wordSearch.classList.remove('hidden');
+              initWordSearch();
+              updateProgress(1);
+              window.scrollTo(0, 0);
+          });
+          
+          wordSearchNextBtn.addEventListener('click', function() {
+              wordSearch.classList.add('hidden');
+              hangman.classList.remove('hidden');
+              initHangman();
+              updateProgress(2);
+              window.scrollTo(0, 0);
+          });
+          
+          hangmanNextBtn.addEventListener('click', function() {
+              hangman.classList.add('hidden');
+              ticTacToe.classList.remove('hidden');
+              initTicTacToe();
+              updateProgress(3);
+              window.scrollTo(0, 0);
+          });
+          
+          tttNextBtn.addEventListener('click', function() {
+              ticTacToe.classList.add('hidden');
+              millionQuestion.classList.remove('hidden');
+              createConfetti();
+              window.scrollTo(0, 0);
+          });
+          
+          millionQuestionBtn.addEventListener('click', function() {
+              millionQuestion.classList.add('hidden');
+              proposal.classList.remove('hidden');
+              window.scrollTo(0, 0);
+          });
+          
+          heartNextBtn.addEventListener('click', function() {
+              result.classList.add('hidden');
+              calendarContainer.classList.remove('hidden');
+              initCalendar();
+              window.scrollTo(0, 0);
+          });
+          
+          // Criar corações flutuantes para a tela inicial
+          function createHearts() {
+              const container = document.querySelector('body');
+              const heart = document.createElement('div');
+              heart.classList.add('pixel-hearts');
+              
+              // Posição aleatória
+              const posX = Math.random() * window.innerWidth;
+              heart.style.left = posX + 'px';
+              heart.style.top = window.innerHeight + 'px';
+              
+              // Tamanho aleatório
+              const size = Math.random() * 15 + 10;
+              heart.style.width = size + 'px';
+              heart.style.height = size + 'px';
+              
+              // Duração aleatória
+              const duration = Math.random() * 5 + 3;
+              heart.style.animation = `float-hearts ${duration}s linear infinite`;
+              
+              container.appendChild(heart);
+              
+              // Remover após a animação
+              setTimeout(() => {
+                  heart.remove();
+              }, duration * 1000);
+          }
+          
+          // Criar corações a cada 300ms para a tela inicial
+          setInterval(createHearts, 300);
+      });
+  </script>
+</body>
+</html>
+
